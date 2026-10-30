@@ -63,8 +63,6 @@ the browser to use voice input; the text input is available as a fallback.
 | `GEMINI_API_KEY` | Yes | Gemini chat model and speech generation |
 | `GROQ_API_KEY` | Yes | Groq audio transcription |
 | `TAVILY_API_KEY` | Yes | Web research tool |
-| `VOICE_AGENT_USERNAME` | No | Optional HTTP Basic Auth username |
-| `VOICE_AGENT_PASSWORD` | No | Optional HTTP Basic Auth password |
 | `CHAT_MODEL` | No | Chat model; defaults to `gemini-3.1-flash-lite` |
 | `STT_MODEL` | No | Transcription model; defaults to `whisper-large-v3-turbo` |
 | `TTS_MODEL` | No | Example/config model setting; defaults to `gemini-3.8-flash-tts` |
@@ -77,9 +75,10 @@ the browser to use voice input; the text input is available as a fallback.
 specifies its model directly. Copy `.env.example` to `.env` for local use, and
 never commit `.env` or paste secret values into source files.
 
-HTTP Basic Auth is disabled when either `VOICE_AGENT_USERNAME` or
-`VOICE_AGENT_PASSWORD` is unset. When both are set, the app page and API
-endpoints require those credentials.
+The app and API endpoints are publicly accessible without a login. Anyone with
+the URL can use configured services, including research and connected Gmail or
+Notion actions. Do not deploy this configuration with sensitive integrations
+unless you accept that exposure.
 
 ## API
 
@@ -102,10 +101,9 @@ blank when deploying from the repository root.
 - **Build command:** `pip install -r requirements.txt`
 - **Start command:** `uvicorn web_app.server:app --host 0.0.0.0 --port $PORT`
 
-Add the API keys and optional Basic Auth credentials in the Render service's
-Environment settings. Do not upload `.env`; enter secret values in the Render
-dashboard. Use HTTPS for the deployed site, especially when using Basic Auth or
-microphone recording.
+Add the API keys in the Render service's Environment settings. Do not upload
+`.env`; enter secret values in the Render dashboard. Use HTTPS for the deployed
+site, especially when using microphone recording.
 
 The MCP configuration launches Gmail and Notion integrations with `npx`, so
 Node.js/npm and working MCP authentication must also be available in the
@@ -116,8 +114,6 @@ and Node.js. `pywin32` is Windows-only and is marked as such in
 
 ## Troubleshooting
 
-- **401 / invalid credentials:** use the exact `VOICE_AGENT_USERNAME` and
-  `VOICE_AGENT_PASSWORD` configured for the running server.
 - **Slow first reply:** transcription, model/tool calls, and speech synthesis
   run in sequence. Research and MCP operations depend on external services.
 - **Text reply but no audio:** synthesis is optional; check server logs for
